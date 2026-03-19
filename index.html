@@ -1,182 +1,276 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Suma Binaria (2 bits + 2 bits)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background: #111;
-      color: white;
-      gap: 14px;
-    }
+<meta charset="UTF-8">
+<title>Suma Binaria N bits</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    #display {
-      width: 260px;
-      height: 60px;
-      font-size: 28px;
-      text-align: center;
-      border-radius: 10px;
-      border: none;
-      background: #222;
-      color: #0f0;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  height: 100vh;
+  justify-content: center;
+}
 
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
-    .group {
-      display: grid;
-      grid-template-columns: repeat(2, 70px);
-      gap: 10px;
-    }
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
-    button.bit {
-      width: 70px;
-      height: 70px;
-      font-size: 22px;
-      border-radius: 10px;
-      border: none;
-      background: #333;
-      color: white;
-    }
+input[type="number"] {
+  width: 80px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: none;
+  padding: 6px;
+  background: #222;
+  color: white;
+  text-align: center;
+}
 
-    button.bit.active {
-      background: #0a84ff;
-    }
+button {
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+}
 
-    .paper {
-      background: #000;
-      padding: 14px 18px;
-      border-radius: 10px;
-      border: 2px solid #333;
-      font-family: monospace;
-      font-size: 26px;
-      text-align: right;
-      min-width: 160px;
-    }
+button.bit, button.gen {
+  width: 50px;
+  height: 50px;
+  font-size: 18px;
+}
 
-    .carry {
-      color: #f5a623;
-      font-size: 18px;
-      letter-spacing: 18px;
-      text-align: right;
-      padding-right: 6px;
-    }
+button.bit.active {
+  background: #0a84ff;
+}
 
-    .carry-bit {
-      color: #f5a623;
-    }
+button.gen.active {
+  background: #0a84ff;
+}
 
-    .line {
-      border-top: 2px solid #555;
-      margin: 6px 0;
-    }
-  </style>
+button.gen:hover {
+  background: #444;
+}
+
+#display {
+  width: 260px;
+  height: 50px;
+  font-size: 24px;
+  text-align: center;
+  border-radius: 10px;
+  border: none;
+  background: #222;
+  color: #0f0;
+}
+
+.row {
+  width: 100%;
+  max-width: 900px;
+}
+
+.group {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  justify-content: center;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.plus {
+  text-align: left;
+  font-size: 22px;
+  margin: 4px 0;
+}
+
+.paper {
+  background: #000;
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid #333;
+  font-family: monospace;
+  font-size: 22px;
+  text-align: right;
+  min-width: 200px;
+}
+
+.carry {
+  color: orange;
+  letter-spacing: 12px;
+}
+
+.carry-bit {
+  color: orange;
+}
+
+.line {
+  border-top: 2px solid #555;
+  margin: 5px 0;
+}
+
+#bits {
+  width: 70px;
+  height: 50px;
+  font-size: 22px;
+  font-family: monospace;
+  background: #000;
+  color: #0f0;
+  border: 1px solid #333;
+}
+
+</style>
 </head>
+
 <body>
 
-  <div style="font-size:20px;">Z = B + A</div>
-  <input id="display" type="text" value="0" readonly>
+<h1>Calculadora Binaria</h1>
 
-  <div class="row">
-    <div>
-      <div style="text-align:center; margin-bottom:4px;">B   A</div>
-      <div class="group" id="groupB">
-        <button class="bit" data-value="2">0</button>
-        <button class="bit" data-value="1">0</button>
-      </div>
-    </div>
-
-    <div style="font-size:60px;">+</div>
-
-    <div>
-      <div style="text-align:center; margin-bottom:4px;">B   A</div>
-      <div class="group" id="groupA">
-        <button class="bit" data-value="2">0</button>
-        <button class="bit" data-value="1">0</button>
-      </div>
-    </div>
+<p>
+    Elegir la cantidad de bits y pulsar OK.
+    <br>
+    Encender los bits en 1 correspondientes para realizar la suma.
+    <br>
+    Los bits en naranja son indicadores de Carry cuando existe es "1".
+    <br>
+    <br>
+    La calculadora tiene soporte táctil.
+</p>
+<br>
+<div style="display:flex; align-items:center; justify-content:center; gap:10px; width:100%;">
+  <span>Bits:</span>
+  <button class="gen" onclick="changeBits(-1)">-</button>
+  <input type="number" id="bits" value="2" min="1" max="16">
+  <button class="gen" onclick="changeBits(1)">+</button>
+  <button class="gen" onclick="generate()">OK</button>
 </div>
-  <div class="paper">
-    <div id="carry" class="carry">00</div>
-    <div id="binB">00</div>
-    <div>+ <span id="binA">00</span></div>
-    <div class="line"></div>
-    <div id="binR">00</div>
-  </div>
 
-  <script>
-    const buttons = document.querySelectorAll("button.bit");
-    const display = document.getElementById("display");
+<div>Z = B + A</div>
 
-    const elB = document.getElementById("binB");
-    const elA = document.getElementById("binA");
-    const elR = document.getElementById("binR");
-    const elCarry = document.getElementById("carry");
+<div>Resultado en Decimal</div>
+<input id="display" type="text" value="0" readonly>
 
-    buttons.forEach(btn => {
-      btn.addEventListener("pointerdown", () => toggleBit(btn));
-    });
+<div class="row">
+  <div id="groupA" class="group"></div>
+  <div class="plus">+</div>
+  <div id="groupB" class="group"></div>
+</div>
 
-    function toggleBit(btn) {
-      btn.classList.toggle("active");
-      btn.textContent = btn.classList.contains("active") ? "1" : "0";
-      updateAll();
-    }
+<div class="paper">
+  <div id="carry" class="carry"></div>
+  <div id="binA"></div>
+  <div>+ <span id="binB"></span></div>
+  <div class="line"></div>
+  <div id="binR"></div>
+</div>
 
-    function getBits(groupId) {
-      const group = document.getElementById(groupId);
-      const btns = group.querySelectorAll("button");
-      return Array.from(btns).map(b => b.classList.contains("active") ? 1 : 0);
-    }
+<script>
+const display = document.getElementById("display");
+const elA = document.getElementById("binA");
+const elB = document.getElementById("binB");
+const elR = document.getElementById("binR");
+const elCarry = document.getElementById("carry");
 
-    function bitsToDecimal(bits) {
-      return bits[0]*2 + bits[1];
-    }
+function generate() {
+  const n = parseInt(document.getElementById("bits").value);
+  const groupA = document.getElementById("groupA");
+  const groupB = document.getElementById("groupB");
 
-    function updateAll() {
-      const A = getBits("groupA");
-      const B = getBits("groupB");
+  groupA.innerHTML = "";
+  groupB.innerHTML = "";
 
-      display.value = bitsToDecimal(A) + bitsToDecimal(B);
+  for (let i = 0; i < n; i++) {
+    groupA.appendChild(createButton());
+    groupB.appendChild(createButton());
+  }
 
-      elA.textContent = A.join("");
-      elB.textContent = B.join("");
+  updateAll();
+}
 
-      // LSB
-      const sum0 = B[1] + A[1];
-      const r0 = sum0 % 2;
-      const c0 = Math.floor(sum0 / 2);
+function createButton() {
+  const btn = document.createElement("button");
+  btn.className = "bit";
+  btn.textContent = "0";
 
-      // MSB
-      const sum1 = B[0] + A[0] + c0;
-      const r1 = sum1 % 2;
-      const c1 = Math.floor(sum1 / 2);
-
-      // Carry arriba (AHORA incluye ambos)
-      elCarry.textContent = `${c1}${c0}`;
-
-      // Resultado con carry bajado y coloreado
-      if (c1 === 1) {
-        elR.innerHTML = `<span class="carry-bit">${c1}</span>${r1}${r0}`;
-      } else {
-        elR.textContent = `${r1}${r0}`;
-      }
-    }
-
+  btn.addEventListener("pointerdown", () => {
+    btn.classList.toggle("active");
+    btn.textContent = btn.classList.contains("active") ? "1" : "0";
     updateAll();
-  </script>
+  });
+
+  return btn;
+}
+
+function getBits(groupId) {
+  return Array.from(document.getElementById(groupId).children)
+    .map(b => b.classList.contains("active") ? 1 : 0);
+}
+
+function bitsToDecimal(bits) {
+  return bits.reduce((acc, bit, i) =>
+    acc + bit * Math.pow(2, bits.length - i - 1), 0);
+}
+
+function updateAll() {
+  const A = getBits("groupA");
+  const B = getBits("groupB");
+
+  display.value = bitsToDecimal(A) + bitsToDecimal(B);
+
+  elA.textContent = A.join("");
+  elB.textContent = B.join("");
+
+  let carry = 0;
+  let result = [];
+  let carries = [];
+
+  for (let i = A.length - 1; i >= 0; i--) {
+    const sum = A[i] + B[i] + carry;
+    result.unshift(sum % 2);
+    carry = Math.floor(sum / 2);
+    carries.unshift(carry);
+  }
+
+  // Mostrar todos los carries arriba
+  elCarry.textContent = carries.join("");
+
+  // Resultado con carry final bajado y coloreado
+  if (carry === 1) {
+    elR.innerHTML = `<span class="carry-bit">1</span>${result.join("")}`;
+  } else {
+    elR.textContent = result.join("");
+  }
+}
+
+function changeBits(delta) {
+  const input = document.getElementById("bits");
+  let value = parseInt(input.value);
+
+  value += delta;
+
+  if (value < 1) value = 1;
+  if (value > 16) value = 16;
+
+  input.value = value;
+}
+
+
+// init
+generate();
+</script>
 
 </body>
 </html>
