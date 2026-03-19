@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Suma Binaria (2 bits + 2 bits)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #111;
+      color: white;
+      gap: 14px;
+    }
+
+    #display {
+      width: 260px;
+      height: 60px;
+      font-size: 28px;
+      text-align: center;
+      border-radius: 10px;
+      border: none;
+      background: #222;
+      color: #0f0;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .group {
+      display: grid;
+      grid-template-columns: repeat(2, 70px);
+      gap: 10px;
+    }
+
+    button.bit {
+      width: 70px;
+      height: 70px;
+      font-size: 22px;
+      border-radius: 10px;
+      border: none;
+      background: #333;
+      color: white;
+    }
+
+    button.bit.active {
+      background: #0a84ff;
+    }
+
+    .paper {
+      background: #000;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 2px solid #333;
+      font-family: monospace;
+      font-size: 26px;
+      text-align: right;
+      min-width: 160px;
+    }
+
+    .carry {
+      color: #f5a623;
+      font-size: 18px;
+      letter-spacing: 18px;
+      text-align: right;
+      padding-right: 6px;
+    }
+
+    .carry-bit {
+      color: #f5a623;
+    }
+
+    .line {
+      border-top: 2px solid #555;
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div style="font-size:20px;">Z = B + A</div>
+  <input id="display" type="text" value="0" readonly>
+
+  <div class="row">
+    <div>
+      <div style="text-align:center; margin-bottom:4px;">B   A</div>
+      <div class="group" id="groupB">
+        <button class="bit" data-value="2">0</button>
+        <button class="bit" data-value="1">0</button>
+      </div>
+    </div>
+
+    <div style="font-size:60px;">+</div>
+
+    <div>
+      <div style="text-align:center; margin-bottom:4px;">B   A</div>
+      <div class="group" id="groupA">
+        <button class="bit" data-value="2">0</button>
+        <button class="bit" data-value="1">0</button>
+      </div>
+    </div>
+</div>
+  <div class="paper">
+    <div id="carry" class="carry">00</div>
+    <div id="binB">00</div>
+    <div>+ <span id="binA">00</span></div>
+    <div class="line"></div>
+    <div id="binR">00</div>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll("button.bit");
+    const display = document.getElementById("display");
+
+    const elB = document.getElementById("binB");
+    const elA = document.getElementById("binA");
+    const elR = document.getElementById("binR");
+    const elCarry = document.getElementById("carry");
+
+    buttons.forEach(btn => {
+      btn.addEventListener("pointerdown", () => toggleBit(btn));
+    });
+
+    function toggleBit(btn) {
+      btn.classList.toggle("active");
+      btn.textContent = btn.classList.contains("active") ? "1" : "0";
+      updateAll();
+    }
+
+    function getBits(groupId) {
+      const group = document.getElementById(groupId);
+      const btns = group.querySelectorAll("button");
+      return Array.from(btns).map(b => b.classList.contains("active") ? 1 : 0);
+    }
+
+    function bitsToDecimal(bits) {
+      return bits[0]*2 + bits[1];
+    }
+
+    function updateAll() {
+      const A = getBits("groupA");
+      const B = getBits("groupB");
+
+      display.value = bitsToDecimal(A) + bitsToDecimal(B);
+
+      elA.textContent = A.join("");
+      elB.textContent = B.join("");
+
+      // LSB
+      const sum0 = B[1] + A[1];
+      const r0 = sum0 % 2;
+      const c0 = Math.floor(sum0 / 2);
+
+      // MSB
+      const sum1 = B[0] + A[0] + c0;
+      const r1 = sum1 % 2;
+      const c1 = Math.floor(sum1 / 2);
+
+      // Carry arriba (AHORA incluye ambos)
+      elCarry.textContent = `${c1}${c0}`;
+
+      // Resultado con carry bajado y coloreado
+      if (c1 === 1) {
+        elR.innerHTML = `<span class="carry-bit">${c1}</span>${r1}${r0}`;
+      } else {
+        elR.textContent = `${r1}${r0}`;
+      }
+    }
+
+    updateAll();
+  </script>
+
+</body>
+</html>
